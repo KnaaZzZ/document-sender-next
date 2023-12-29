@@ -1,9 +1,9 @@
 export type UserType = {
     email: string,
-    password: string,
+    password: string
 }
 
 export type ConnectionType = {
-    userIndex: number
+    userIndex: number,
     users: UserType[]
 }

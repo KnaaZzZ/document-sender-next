@@ -1,4 +1,4 @@
-import { ConnectionType, UserType } from "@/lib/types"
+import { UserType } from "@/lib/types"
 
 export const getUserById = async (id : string) => {
     try {
@@ -12,15 +12,6 @@ export const getUserById = async (id : string) => {
 export const getUserByEmail = async (email : string) => {
     try {
         const res = await fetch(`http://localhost:3000/api/users/user/email/${email}`);
-        return res.json()
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-export const getUsers = async (id : string) => {
-    try {
-        const res = await fetch(`http://localhost:3000/api/users/user/id/${id}`);
         return res.json()
     } catch (error) {
         console.log(error);
@@ -67,9 +58,9 @@ export const getConnectionById = async (id : string) => {
 }
 
 export const getConnectionsByIds = async (ids : string[]) => {
-    var connections : ConnectionType[] = [];
+    var connections = [];
     for (let i = 0; i < ids.length; i++) {
-        const connection : ConnectionType = await getConnectionById(ids[i]);
+        const { connection } = await getConnectionById(ids[i]);
         connections.push(connection);
     }
     return connections;
