@@ -9,7 +9,7 @@ export const GET = async (request : NextRequest, { params } : any) => {
     return NextResponse.json({user})
 }
 
-export const POST = async (request : NextRequest, { params } : any) => {
+export const PUT = async (request : NextRequest, { params } : any) => {
     const { id } = params;
     const { user } = await request.json();
     await connectMongoDB();
