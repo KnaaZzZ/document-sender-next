@@ -1,14 +1,12 @@
 "use client"
 
 import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
-import { setEmail } from '@/lib/redux/reducers/authDataReducer';
-import { login } from '@/lib/redux/reducers/userDataReducer';
-import { getConnectionsByIds, getUserByEmail } from '@/lib/services/mongodb';
+import { setEmail, setMethod, setPassword, setToken } from '@/lib/redux/reducers/authDataReducer';
+import { getUserByEmail } from '@/lib/services/mongodb';
 import { hashedString, isValidEmail, isValidPassword, normalizedEmail } from '@/lib/util/authUtil';
-import { normalizedConnections, normalizedUser } from '@/lib/util/typeUtil';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { ChangeEvent, useState } from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 
 const LoginPage = () => {
     const authData = useAppSelector(state => state.authData);
@@ -16,80 +14,71 @@ const LoginPage = () => {
 
     const router = useRouter();
 
-    const initialErrors = {
+    const initialData = {
         email: "",
         password: ""
     }
-    const [errors, setErrors] = useState(initialErrors);
 
-    const initialLoginData = {
-        password: ""
-    }
-    const [loginData, setLoginData] = useState(initialLoginData);
+    const [errorData, setErrorData] = useState(initialData);
+    const [loginData, setLoginData] = useState(initialData);
 
-    const setData = (name : string, value : string) => {
-        setLoginData({...loginData, [name]: value})
+    const handleChange = (e : ChangeEvent<HTMLInputElement>) => {
+        setLoginData({...loginData, [e.target.name]: e.target.value});
+        setErrorData({...errorData, [e.target.name]: ""});
     }
 
-    const setError = (name : string, value : string) => {
-        setErrors({...errors, [name]: value})
-    }
+    useEffect(() => {
+        dispatch(setEmail(loginData.email));
+    }, [loginData.email])
 
-    const handleClick = async () => {
-        if (!primaryCheck()) {
+    const handleClick = () => {
+        if (!checks()) {
             return;
         }
-        const { user } : any = await getUserByEmail(hashedString(normalizedEmail(authData.email)));
-        if (!user) {
-            setError("email", "User with given email, does not exist.")
-            return;
-        }
-        if (user.password !== hashedString(loginData.password)) {
-            setError("password", "Wrong password.")
-            return;
-        }
-        const connections : any = await getConnectionsByIds(user.connectionsIds); 
-        const data = {
-            user: normalizedUser(user),
-            connections: normalizedConnections(connections, user.id)
-        }
-        dispatch(login(data));
-        router.push('/home');
+        const token = Math.floor(100000 + Math.random() * 900000).toString();
+        // send token to email
+        dispatch(setPassword(hashedString(loginData.password)));
+        dispatch(setToken(token));
+        dispatch(setMethod("login"));
+        router.push('/auth/verification');
     }
 
-    const primaryCheck = () => {
-        var returnBoolean = true;
+    const checks = async () => {
+        var checkValid = true;
         var error = {
             email: "",
             password: ""
         }
-        if (!isValidEmail(authData.email)) {
+        if (!isValidEmail(loginData.email)) {
             error.email = "Email provided is of wrong type (example@domain.com).";
-            returnBoolean = false;
+            checkValid = false;
         }
         if (!isValidPassword(loginData.password)) {
             error.password = "Password should have at least 8 characters of length, including one number, lower and capital letter.";
-            returnBoolean = false;
+            checkValid = false;
         }
-        setErrors(error);
-        return returnBoolean;
-    }
-    
-    const handleChange = (e : ChangeEvent<HTMLInputElement>) => {
-        if (e.target.name === "email") {
-            dispatch(setEmail(e.target.value));
-        } else {
-            setData(e.target.name, e.target.value);
+        if (!checkValid) {
+            return false;
         }
-        setError(e.target.name, "");
+        setLoginData({...loginData, email: normalizedEmail(loginData.email)});
+        const { user } : any = await getUserByEmail(normalizedEmail(loginData.email));
+        if (!user) {
+            setErrorData({...errorData, email: "User with given email, does not exist."})
+            return false;
+        }
+        if (user.password !== hashedString(loginData.password)) {
+            setErrorData({...errorData, password: "Wrong password."})
+            return false;
+        }
+        return true;
     }
 
     return (
         <div>
             <input name='email' type='text' value={authData.email} onChange={handleChange}/>
-            <div>{errors.email}</div>
+            <div>{errorData.email}</div>
             <input name='password' type='password' value={loginData.password} onChange={handleChange}/>
-            <div>{errors.password}</div>
+            <div>{errorData.password}</div>
             <Link href={'/auth/forgot_password'}>Forgot Password?</Link>
             <button onClick={handleClick}>LOGIN</button>
             <Link href={'/auth/register'}>CREATE ACCOUNT</Link>

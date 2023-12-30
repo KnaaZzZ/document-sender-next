@@ -2,21 +2,21 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '../store'
 import { UserType, ConnectionType } from '../../types/index'
 
-type UserDataType = {
+type HomeDataType = {
   user: UserType | null,
   connections: ConnectionType[]
 }
 
-const initialState : UserDataType = {
+const initialState : HomeDataType = {
   user: null,
   connections: []
 }
 
-export const userDataSlice = createSlice({
-  name: 'userData',
+export const homeDataSlice = createSlice({
+  name: 'homeData',
   initialState,
   reducers: {
-    login : (state, action: PayloadAction<UserDataType>) => {
+    login : (state, action: PayloadAction<HomeDataType>) => {
       state = action.payload;
     },
     logout : state => {
@@ -25,6 +25,6 @@ export const userDataSlice = createSlice({
   }
 })
 
-export const { login, logout } = userDataSlice.actions
-export const selectUserData = (state: RootState) => state.userData
-export default userDataSlice.reducer
+export const { login, logout } = homeDataSlice.actions
+export const selectHomeData = (state: RootState) => state.homeData
+export default homeDataSlice.reducer

@@ -1,10 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit'
-import userDataReducer from './reducers/userDataReducer'
+import homeDataReducer from './reducers/homeDataReducer'
 import authDataReducer from './reducers/authDataReducer'
 
 export const store = configureStore({
   reducer: {
-    userData: userDataReducer,
+    homeData: homeDataReducer,
     authData: authDataReducer
   }
 })

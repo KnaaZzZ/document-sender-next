@@ -4,14 +4,20 @@ import { UserType, ConnectionType } from '../../types/index'
 
 type AuthDataType = {
     name: string,
-    surname: string,
-    email: string
+    email: string,
+    password: string,
+    token: string,
+
+    method: string
 }
 
 const initialState : AuthDataType = {
   name: "",
-  surname: "",
-  email: ""
+  email: "",
+  password: "",
+  token: "",
+
+  method: ""
 }
 
 export const authDataSlice = createSlice({
@@ -21,15 +27,24 @@ export const authDataSlice = createSlice({
     setName: (state, action : PayloadAction<string>) => {
         state.name = action.payload;
     },
-    setSurname: (state, action : PayloadAction<string>) => {
-        state.surname = action.payload;
-    },
     setEmail: (state, action : PayloadAction<string>) => {
         state.email = action.payload;
+    },
+    setPassword: (state, action : PayloadAction<string>) => {
+      state.password = action.payload;
+    },
+    setToken: (state, action : PayloadAction<string>) => {
+      state.token = action.payload;
+    },
+    setMethod: (state, action : PayloadAction<string>) => {
+      state.method = action.payload;
+    },
+    clearAuthData: (state) => {
+      state = initialState;
     }
   }
 })
 
-export const { setName, setSurname, setEmail } = authDataSlice.actions
+export const { setName, setEmail, setPassword, setMethod, clearAuthData } = authDataSlice.actions
 export const selectAuthData = (state: RootState) => state.authData
 export default authDataSlice.reducer
