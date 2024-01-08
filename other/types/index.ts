@@ -11,7 +11,9 @@ export type UserType = {
 
     verification: boolean,
     firstTime: boolean,
-    sessionId: string
+    sessionId: string,
+
+    logoutAfter: number // 3600000 is hour
 }
 
 export type SavedDocumentType = {
@@ -46,5 +48,5 @@ export type SessionType = {
 
     userId: string,
 
-    invalidTime: Date // to change
+    invalidAt: Date // to change
 }

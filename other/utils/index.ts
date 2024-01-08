@@ -8,3 +8,23 @@ export const normalizeConnections =  async (connections: ConnectionType[], userI
     }
     return connections;
 }
+
+export const sendEmail = async (serviceId: string, templateId: string, userId: string, templateParams: any) => {
+    try {
+        const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                service_id: serviceId,
+                template_id: templateId,
+                user_id: userId,
+                template_params: templateParams
+            })
+        })
+        return res;
+    } catch (e) {
+        console.log(e);
+    }
+}
